@@ -1,44 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fish Species Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Welcome to the Fish Species Predictor</h1>
-    <form id="prediction-form">
-        <label for="Weight">Weight:</label>
-        <input type="number" id="Weight" name="Weight"><br>
-        <label for="Length1">Length1:</label>
-        <input type="number" id="Length1" name="Length1"><br>
-        <label for="Length2">Length2:</label>
-        <input type="number" id="Length2" name="Length2"><br>
-        <label for="Length3">Length3:</label>
-        <input type="number" id="Length3" name="Length3"><br>
-        <label for="Height">Height:</label>
-        <input type="number" id="Height" name="Height"><br>
-        <label for="Width">Width:</label>
-        <input type="number" id="Width" name="Width"><br>
-        <button type="button" onclick="predict()">Predict</button>
-    </form>
-    <p id="result"></p>
+    <div class="container">
+        <h1>Welcome to the Fish Species Predictor</h1>
+        <form id="predictForm">
+            <label for="weight">Weight:</label>
+            <input type="number" id="weight" name="Weight" required><br>
+            <label for="length1">Length1:</label>
+            <input type="number" id="length1" name="Length1" required><br>
+            <label for="length2">Length2:</label>
+            <input type="number" id="length2" name="Length2" required><br>
+            <label for="length3">Length3:</label>
+            <input type="number" id="length3" name="Length3" required><br>
+            <label for="height">Height:</label>
+            <input type="number" id="height" name="Height" required><br>
+            <label for="width">Width:</label>
+            <input type="number" id="width" name="Width" required><br>
+            <button type="button" onclick="predict()">Predict</button>
+        </form>
+        <div id="result"></div>
+    </div>
     <script>
-        async function predict() {
-            const form = document.getElementById('prediction-form');
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+        function predict() {
+            const formData = {
+                Weight: document.getElementById('weight').value,
+                Length1: document.getElementById('length1').value,
+                Length2: document.getElementById('length2').value,
+                Length3: document.getElementById('length3').value,
+                Height: document.getElementById('height').value,
+                Width: document.getElementById('width').value
+            };
 
-            const response = await fetch('/predict', {
+            fetch('/predict', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-            document.getElementById('result').innerText = result.species || result.error;
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').innerText = data.error;
+                } else {
+                    document.getElementById('result').innerText = `The fish species is: ${data.species}`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
