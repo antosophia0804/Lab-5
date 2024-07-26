@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Species Predictor</title>
+</head>
+<body>
+    <h1>Welcome to the Fish Species Predictor</h1>
+    <form id="prediction-form">
+        <label for="Weight">Weight:</label>
+        <input type="number" id="Weight" name="Weight"><br>
+        <label for="Length1">Length1:</label>
+        <input type="number" id="Length1" name="Length1"><br>
+        <label for="Length2">Length2:</label>
+        <input type="number" id="Length2" name="Length2"><br>
+        <label for="Length3">Length3:</label>
+        <input type="number" id="Length3" name="Length3"><br>
+        <label for="Height">Height:</label>
+        <input type="number" id="Height" name="Height"><br>
+        <label for="Width">Width:</label>
+        <input type="number" id="Width" name="Width"><br>
+        <button type="button" onclick="predict()">Predict</button>
+    </form>
+    <p id="result"></p>
+    <script>
+        async function predict() {
+            const form = document.getElementById('prediction-form');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            document.getElementById('result').innerText = result.species || result.error;
+        }
+    </script>
+</body>
+</html>
